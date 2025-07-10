@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface FahndungFormData {
   title: string;
@@ -11,7 +12,7 @@ interface FahndungFormData {
 }
 
 export default function FahndungForm() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: session, status } = useSession();
   const [formData, setFormData] = useState<FahndungFormData>({
     title: "",
     description: "",
@@ -24,21 +25,6 @@ export default function FahndungForm() {
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
-
-  useEffect(() => {
-    // Prüfe Demo-Session
-    const demoSession = localStorage.getItem("demo-session");
-    if (demoSession) {
-      try {
-        JSON.parse(demoSession);
-        setIsLoggedIn(true);
-      } catch {
-        setIsLoggedIn(false);
-      }
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
 
   const categories = [
     "Vermisste Person",
@@ -111,7 +97,7 @@ export default function FahndungForm() {
     }
   };
 
-  if (!isLoggedIn) {
+  if (!session) {
     return (
       <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-6 text-center">
         <h3 className="mb-2 text-lg font-semibold text-yellow-800">
@@ -162,7 +148,7 @@ export default function FahndungForm() {
               id="title"
               value={formData.title}
               onChange={(e) => handleInputChange("title", e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.title ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Kurzer, beschreibender Titel"
@@ -184,7 +170,7 @@ export default function FahndungForm() {
               id="category"
               value={formData.category}
               onChange={(e) => handleInputChange("category", e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.category ? "border-red-500" : "border-gray-300"
               }`}
             >
@@ -213,7 +199,7 @@ export default function FahndungForm() {
               id="location"
               value={formData.location}
               onChange={(e) => handleInputChange("location", e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.location ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="z.B. Stuttgart, Karlsruhe, etc."
@@ -236,7 +222,7 @@ export default function FahndungForm() {
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
               rows={6}
-              className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.description ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Detaillierte Beschreibung des Vorfalls, der gesuchten Person oder des gesuchten Objekts..."
@@ -259,7 +245,7 @@ export default function FahndungForm() {
               value={formData.contactInfo}
               onChange={(e) => handleInputChange("contactInfo", e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Telefonnummer, E-Mail oder andere Kontaktmöglichkeiten für Rückfragen..."
             />
           </div>

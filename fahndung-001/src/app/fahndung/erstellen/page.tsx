@@ -2,39 +2,40 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import FahndungForm from "~/components/fahndung/FahndungForm";
 
 export default function FahndungErstellenPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Prüfe Demo-Session
-    const demoSession = localStorage.getItem("demo-session");
-    if (!demoSession) {
-      router.push("/login");
-      return;
+    if (status === "loading") {
+      return; // Warte auf Session-Loading
     }
 
-    try {
-      JSON.parse(demoSession);
-    } catch {
+    if (!session) {
       router.push("/login");
       return;
     }
 
     setIsLoading(false);
-  }, [router]);
+  }, [session, status, router]);
 
-  if (isLoading) {
+  if (status === "loading" || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="mt-4 text-gray-600">Lade Seite...</p>
         </div>
       </div>
     );
+  }
+
+  if (!session) {
+    return null; // Wird zur Login-Seite weitergeleitet
   }
 
   return (
