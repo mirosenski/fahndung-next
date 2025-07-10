@@ -1,0 +1,4 @@
+packages:
+  - "cli"
+  - "www"
+  - "fahndung-001"
